@@ -13,7 +13,7 @@ const httpURL = "https://demo.geeo.io"
 var geeo = new GeeoWS(wsURL);
 var geeoHttp = new GeeoHTTP(httpURL);
 
-geeoHttp.getGuestToken(httpURL, {name: 'chris', age: 45})
+geeoHttp.getGuestToken({name: 'chris', age: 45})
 .then( function(token) {
 	geeo.connect(token)
 }).catch(function(error) {
@@ -32,8 +32,8 @@ geeo.on('connect', function() {
 	geeo.getPosition() // null if not set [lon, lat] otherwise
 })
 
-geeo.on('view.update', function() {
-	geeo.view.getAll() // agents and pois
+geeo.on('view.updated', function() {
+	geeo.view.all() // agents and pois
 	geeo.view.pois() // pois only
 	geeo.view.agents() // agents
 
@@ -43,13 +43,13 @@ geeo.on('view.update', function() {
 	geeo.removeAirBeacon(ab)
 })
 
-geeo.on('agent.added', function(agent){})
-geeo.on('agent.moved', function(agent){})
-geeo.on('agent.removed', function(agent){})
+geeo.view.on('agent.entered', function(agent){})
+geeo.view.on('agent.moved', function(agent){})
+geeo.view.on('agent.left', function(agent){})
 
-geeo.on('poi.added', function(poi){})
-geeo.on('poi.moved', function(poi){})
-geeo.on('poi.removed', function(poi){})
+geeo.view.on('poi.entered', function(poi){})
+geeo.view.on('poi.moved', function(poi){})
+geeo.view.on('poi.left', function(poi){})
 
 geeoHttp.setToken(token) // necessary to use the following features
 geeoHttp.createPOI(poi)
