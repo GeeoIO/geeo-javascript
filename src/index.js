@@ -1,5 +1,15 @@
-import * as EventEmitter from 'wolfy87-eventemitter'
-import * as fetch from 'whatwg-fetch'
+import EventEmitter from 'wolfy87-eventemitter'
+
+export function debounce(fn, delay) {
+  var timer = null;
+  return function () {
+    var context = this, args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      fn.apply(context, args);
+    }, delay);
+  };
+}
 
 /**
  * GeeoWS helps manage a Websocket connection to a Geeo instance.
@@ -34,41 +44,41 @@ export class GeeoWS extends EventEmitter {
 	 * @fires GeeoWS#close
 	 */
 	connect(token) {
-		this.ws = new WebSocket('${this.wsUrl}?token=${token}')
+		this.ws = new WebSocket(`${this.wsURL}?token=${token}`)
 
-		this.ws.on("connect", () => {
+		this.ws.onopen = function() {
 			/**
 			 * Connect event when the websocket is connected
 			 * @event GeeoWS#connect
 			 */
 			this.emit("connect")
-		})
-		this.ws.on("error", (err) => {
+		}.bind(this)
+		this.ws.onerror = function(err) {
 			/**
 			 * Error event when an error occurs on the websocket
 			 * @event GeeoWS#error
 			 */
 			this.emit("error", err)
-		})
-		this.ws.on("message", (message) => {
-			arr = JSON.parse(message)
+		}.bind(this)
+		this.ws.onmessage = function(message) {
+			var arr = JSON.parse(message.data)
 			if (arr.error) {
-				return this.parent.emit("error", arr)
+				return this.emit("error", arr)
 			}
-			this.view._receiveMessage(message)
+			this.view._receiveMessage(arr)
 			/**
 			 * Event sent when the view is updated
 			 * @event GeeoWS#viewUpdated
 			 */
 			this.emit("viewUpdated")
-		})
-		this.ws.on("close", (err) => {
+		}.bind(this)
+		this.ws.onclose = function (err) {
 			/**
 			 * Close event when the websocket is closed
 			 * @event GeeoWS#close
 			 */
 			this.emit("close", err)
-		})
+		}.bind(this)
 	}
 
 	/**
@@ -78,7 +88,7 @@ export class GeeoWS extends EventEmitter {
 	 */
 	move(lon, lat) {
 		this.position = [lon, lat]
-		this.ws.send(JSON.stringify({ AgentPosition: this.position }))
+		this.ws.send(JSON.stringify({ agentPosition: this.position }))
 	}
 
 	/**
@@ -93,7 +103,7 @@ export class GeeoWS extends EventEmitter {
 	 * Add a point of interest
 	 * @param {POI} poi - the point of interest to add
 	 */
-	addPoi(poi) {
+	addPOI(poi) {
 		this.ws.send(JSON.stringify({ createPOI: poi }))
 	}
 
@@ -101,7 +111,7 @@ export class GeeoWS extends EventEmitter {
 	 * Remove a point of interest
 	 * @param {POI} poi - the point of interest to remove
 	 */
-	removePoi(poi) {
+	removePOI(poi) {
 		this.ws.send(JSON.stringify({ removePOI: poi }))
 	}
 
@@ -156,7 +166,7 @@ export class View extends EventEmitter {
 	 */
 	move(lon1, lat1, lon2, lat2) {
 		this.position = [lon1, lat1, lon2, lat2]
-		this.ws.send(JSON.stringify({ ZoomWindowPosition: this.position }))
+		this.parent.ws.send(JSON.stringify({ zoomWindowPosition: this.position }))
 	}
 
 	/**
@@ -201,7 +211,7 @@ export class View extends EventEmitter {
 	 * @fires View#poiLeft
 	 */
 	_receiveMessage(message) {
-		arr.forEach((update) => {
+		message.forEach((update) => {
 			if (update.agent_id) {
 				if (update.entered) {
 					const agent = new Agent(update.agent_id, update.pos, update.publicData)
@@ -241,8 +251,8 @@ export class View extends EventEmitter {
 					this.emit("agentMoved", agent)
 				}
 			} else if (update.poi_id) {
-				if (update.entered) {
-					const poi = new POI(update.poi_id, update.pos, update.publicData)
+				if (update.entered && update.pos != undefined) {
+					const poi = new POI(update.poi_id, update.pos, update.publicData, update.creator)
 					this.pois[poi.id] = poi
 					/**
 					 * Event sent when a new POI becomes visible in the view
@@ -254,8 +264,9 @@ export class View extends EventEmitter {
 					 * @property {string} creator - the ID of the creator of the POI
 					 */
 					this.emit("poiEntered", poi)
-				} else if (update.left) {
-					const poi = this.agents[update.poi_id]
+				}
+				if (update.left) {
+					const poi = this.pois[update.poi_id]
 					/**
 					 * Event sent when a POI becomes invisible for the view
 					 * @event View#poiLeft
@@ -266,20 +277,7 @@ export class View extends EventEmitter {
 					 * @property {string} creator - the ID of the creator of the POI
 					 */
 					this.emit("poiLeft", poi)
-					delete (this.agents, poi.id)
-				} else {
-					const poi = this.agents[update.poi_id]
-					poi.pos = update.pos
-					/**
-					 * Event sent when a POI moves
-					 * @event View#poiMoved
-					 * @type {POI}
-					 * @property {string} id - the ID of the POI
-					 * @property {number[]} pos - the position of the POI as [lon, lat]
-				 	 * @property {Object} publicData - the public data of the POI 
-					 * @property {string} creator - the ID of the creator of the POI
-					 */
-					this.emit("poiMoved", update)
+					delete (this.pois, poi.id)
 				}
 			}
 		})

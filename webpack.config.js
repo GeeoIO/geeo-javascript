@@ -1,7 +1,8 @@
 module.exports = {
+	entry: "./lib/index.js",
     output: {
-        libraryTarget: "commonjs2",
-        library: "geeo-javascript"
+        library: "geeo",
+		libraryTarget: "var"
     },
 	externals: {
 		"wolfy87-eventemitter": false,

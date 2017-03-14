@@ -2,8 +2,8 @@
 <html>
 
 <head>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.2/fetch.js">
-	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.2/fetch.js"></script>
+	<script src="./dist/geeo.js"></script>
 	<style type="text/css">
 		html,
 		body {
@@ -21,124 +21,87 @@
 <body>
 	<div id="map"></div>
 	<script>
-
-
 function initMap() {
-	// Create a map object and specify the DOM element for display.
-	var map = new google.maps.Map(document.getElementById('map'), {
-		center: { lat: 36, lng: -8 },
-		scrollwheel: false,
-		zoom: 8
+// Create a map object and specify the DOM element for display.
+var map = new google.maps.Map(document.getElementById('map'), {
+	center: { lat: 36, lng: -8 },
+	scrollwheel: false,
+	zoom: 8
+});
+
+var geeoHttp = new geeo.GeeoHTTP("http://localhost:8000")
+geeoHttp.getGuestToken("agent"+Date.now(), "view"+Date.now())
+.then(function (token) {
+	var geeoWS = new geeo.GeeoWS("ws://localhost:8000/ws")
+
+	var markers = {}
+
+	map.addListener('click', function(e) {
+		geeoWS.addPOI({
+			poi_id: "your POI "+Date.now(),
+			pos: [e.latLng.lng(), e.latLng.lat()],
+			publicData: {nothing: "special"}
+		})
 	});
+
+	geeoWS.view.on("poiEntered", function(poi) {
+		markers[poi.id] = new google.maps.Marker({
+			position: {lat: poi.pos[1], lng: poi.pos[0]},
+			map: map,
+			opacity: 0.3,
+			title: poi.id
+		})
+	})
+	geeoWS.view.on("poiLeft", function(poi) {
+		markers[poi.id].setMap(null)
+	})
+	geeoWS.view.on("agentEntered", function(agent) {
+		markers[agent.id] = new google.maps.Marker({
+			position: {lat: agent.pos[1], lng: agent.pos[0]},
+			map: map,
+			title: agent.id,
+			opacity: 1
+		});			
+	})
+	geeoWS.view.on("agentLeft", function(agent) {
+		if (markers[agent.id] == undefined) {
+			return
+		}	
+		markers[agent.id].setMap(null) // remove
+		delete(markers, agent.id)
+	})
+	geeoWS.view.on("agentMoved", function(agent) {
+		if (markers[agent.id] == undefined) {
+			return
+		}	
+		markers[agent.id].setPosition( {lat: agent.pos[1], lng: agent.pos[0]} )
+	})	
 	
-	if (self.fetch) {
-		fetch(`https://demo.geeo.io/api/dev/token?zwId=zw${Date.now()}&agId=ag${Date.now()}`)
-		.then(function (response) {
-			if (response.ok) {
-				return response.text()
-			} else {
-				alert("Can't get Token")
-			}
-		})
-		.then(function (token) {
-			const ws = new WebSocket('wss://demo.geeo.io/ws?token='+token)
-			var markers = {}
+	geeoWS.on("connect", function() {
+		map.addListener("bounds_changed", geeo.debounce(function () {
+			var bounds = map.getBounds().toJSON()
+			geeoWS.view.move(bounds.west, bounds.south, bounds.east, bounds.north)
+		}, 500))
+		if (navigator.geolocation) {
+			navigator.geolocation.watchPosition(function(position) {
+				var pos = {
+					lat: position.coords.latitude,
+					lng: position.coords.longitude
+				};
+				map.setCenter(pos);
+				geeoWS.move(position.coords.longitude, position.coords.latitude)
+			}, function() {
+				alert("Can't determine your position, let's say you're in Tenerife")
+				geeoWS.move(-16.7173771, 28.0479823)
+			}, { enableHighAccuracy: true })
+		} else {
+			alert("No support for geolocation in your browser, let's say you're in Tenerife")
+			geeoWS.move(-16.7173771, 28.0479823)
+		}
+	})
 
-			map.addListener('click', function(e) {
-				ws.send(JSON.stringify({
-					CreatePOI: {
-						poi_id: "your POI "+Date.now(),
-						pos: [e.latLng.lng(), e.latLng.lat()],
-						publicData: {nothing: "special"}
-					}
-				}))
-			});
-
-			ws.onmessage = function (event) {
-				var message
-				try {
-					message = JSON.parse(event.data)
-				} catch (err) {
-					console.error("Can't parse JSON", err)
-					console.error(event.data)
-				}
-				if (message.forEach == undefined) {
-					console.error(message)
-				}
-				message.forEach(function(msg) {
-					if (msg.poi_id != undefined) {
-						if (msg.entered === true) {
-							markers[msg.poi_id] = new google.maps.Marker({
-								position: {lat: msg.pos[1], lng: msg.pos[0]},
-								map: map,
-								opacity: 0.3,
-								title: msg.poi_id
-							});
-						} else if (msg.left === true) {
-							markers[msg.poi_id].setMap(null) // remove
-						}
-					} else if (msg.agent_id != undefined) {
-						if (msg.entered === true) {
-							markers[msg.agent_id] = new google.maps.Marker({
-								position: {lat: msg.pos[1], lng: msg.pos[0]},
-								map: map,
-								title: msg.agent_id,
-								opacity: 1
-							});
-						} else if (msg.left === true) {
-							// a marker left before we had the time to add him
-							if (markers[msg.agent_id] == undefined) {
-								return
-							}	
-							markers[msg.agent_id].setMap(null) // remove
-							delete(markers, msg.agent_id)
-						} else {
-							// a marker moved before we had time to add it to the map
-							if (markers[msg.agent_id] == undefined) {
-								return
-							}	
-							markers[msg.agent_id].setPosition( {lat: msg.pos[1], lng: msg.pos[0]} )
-						}
-					}
-				})
-			}
-
-			ws.onopen = function () {
-				map.addListener("bounds_changed", function () {
-					var bounds = map.getBounds().toJSON()
-					ws.send(JSON.stringify({
-						zoomWindowPosition: [bounds.west, bounds.south, bounds.east, bounds.north]
-					}))
-				})
-				if (navigator.geolocation) {
-					navigator.geolocation.watchPosition(function(position) {
-						var pos = {
-							lat: position.coords.latitude,
-							lng: position.coords.longitude
-						};
-						map.setCenter(pos);
-						ws.send(JSON.stringify({agentPosition: [position.coords.longitude, position.coords.latitude]}))
-					}, function() {
-						alert("Can't determine your position, let's say you're in Tenerife")
-						ws.send(JSON.stringify({
-							agentPosition: [-16.7173771, 28.0479823]
-						}))
-					}, options = { enableHighAccuracy: true })
-				} else {
-					alert("No support for geolocation in your browser, let's say you're in Tenerife")
-					ws.send(JSON.stringify({
-						agentPosition: [-16.7173771, 28.0479823]
-					}))
-				}
-			}			
-		})
-		.catch(function (error) {
-			console.error(error)
-		})
-	} else {
-		alert("Your browser is lacking fetch support, get a recent one")
-	}
-
+	geeoWS.connect(token)
+}).catch(console.error)
 }
 	</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYKPaA9Umqj7XEhu-GIKBu7b2pJFCvLKQ&callback=initMap" async
