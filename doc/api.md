@@ -12,6 +12,18 @@ Some GeeoWS connections allow the creation of POIs or AirBeacons, some don&#39;t
 <dd><p>View contains all the features related to the viewport.
 You can use it only if your token allows it.</p>
 </dd>
+<dt><a href="#Agent">Agent</a></dt>
+<dd><p>Agent models a transient moving agent</p>
+</dd>
+<dt><a href="#POI">POI</a></dt>
+<dd><p>POI models a persistent immovable point of interest</p>
+</dd>
+<dt><a href="#AirBeacon">AirBeacon</a></dt>
+<dd><p>AirBeacon models a persistent immovable Air Beacon</p>
+</dd>
+<dt><a href="#GeeoHTTP">GeeoHTTP</a></dt>
+<dd><p>GeeoHTTP let&#39;s you connect to the Geeo HTTP RESTful API</p>
+</dd>
 </dl>
 
 ## Members
@@ -102,7 +114,7 @@ Add a point of interest
 
 | Param | Type | Description |
 | --- | --- | --- |
-| poi | <code>POI</code> | the point of interest to add |
+| poi | <code>[POI](#POI)</code> | the point of interest to add |
 
 <a name="GeeoWS+removePoi"></a>
 
@@ -113,7 +125,7 @@ Remove a point of interest
 
 | Param | Type | Description |
 | --- | --- | --- |
-| poi | <code>POI</code> | the point of interest to remove |
+| poi | <code>[POI](#POI)</code> | the point of interest to remove |
 
 <a name="GeeoWS+addAirBeacon"></a>
 
@@ -124,7 +136,7 @@ Add an Air Beacon
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ab | <code>AirBeacon</code> | the air beacon to add |
+| ab | <code>[AirBeacon](#AirBeacon)</code> | the air beacon to add |
 
 <a name="GeeoWS+removeAirBeacon"></a>
 
@@ -135,7 +147,7 @@ Remove an Air Beacon
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ab | <code>AirBeacon</code> | the air beacon to remove |
+| ab | <code>[AirBeacon](#AirBeacon)</code> | the air beacon to remove |
 
 <a name="GeeoWS+close"></a>
 
@@ -181,6 +193,11 @@ You can use it only if your token allows it.
     * [.move(lon1, lat1, lon2, lat2)](#View+move)
     * [.getPosition()](#View+getPosition) ⇒
     * ["agentEntered"](#View+event_agentEntered)
+    * ["agentLeft"](#View+event_agentLeft)
+    * ["agentMoved"](#View+event_agentMoved)
+    * ["poiEntered"](#View+event_poiEntered)
+    * ["poiLeft"](#View+event_poiLeft)
+    * ["poiMoved"](#View+event_poiMoved)
 
 <a name="new_View_new"></a>
 
@@ -214,9 +231,90 @@ Get the current Viewport
 <a name="View+event_agentEntered"></a>
 
 ### "agentEntered"
-Event sent when a new agent becomes visible
+Event sent when a new agent becomes visible in the view
 
 **Kind**: event emitted by <code>[View](#View)</code>  
+<a name="View+event_agentLeft"></a>
+
+### "agentLeft"
+Event sent when an agent becomes invisible in the view
+
+**Kind**: event emitted by <code>[View](#View)</code>  
+<a name="View+event_agentMoved"></a>
+
+### "agentMoved"
+Event sent when an agent moves
+
+**Kind**: event emitted by <code>[View](#View)</code>  
+<a name="View+event_poiEntered"></a>
+
+### "poiEntered"
+Event sent when a new POI becomes visible in the view
+
+**Kind**: event emitted by <code>[View](#View)</code>  
+<a name="View+event_poiLeft"></a>
+
+### "poiLeft"
+Event sent when a POI becomes invisible for the view
+
+**Kind**: event emitted by <code>[View](#View)</code>  
+<a name="View+event_poiMoved"></a>
+
+### "poiMoved"
+Event sent when a POI moves
+
+**Kind**: event emitted by <code>[View](#View)</code>  
+<a name="Agent"></a>
+
+## Agent
+Agent models a transient moving agent
+
+**Kind**: global class  
+<a name="POI"></a>
+
+## POI
+POI models a persistent immovable point of interest
+
+**Kind**: global class  
+<a name="AirBeacon"></a>
+
+## AirBeacon
+AirBeacon models a persistent immovable Air Beacon
+
+**Kind**: global class  
+<a name="GeeoHTTP"></a>
+
+## GeeoHTTP
+GeeoHTTP let's you connect to the Geeo HTTP RESTful API
+
+**Kind**: global class  
+
+* [GeeoHTTP](#GeeoHTTP)
+    * [new GeeoHTTP(httpURL)](#new_GeeoHTTP_new)
+    * [.getGuestToken(agentId, viewPortId)](#GeeoHTTP+getGuestToken)
+
+<a name="new_GeeoHTTP_new"></a>
+
+### new GeeoHTTP(httpURL)
+Creates a new HTTP connection to Geeo
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| httpURL | <code>string</code> | The HTTP endpoint URL |
+
+<a name="GeeoHTTP+getGuestToken"></a>
+
+### geeoHTTP.getGuestToken(agentId, viewPortId)
+Get a guest token from server. Only possible with development routes allowed
+
+**Kind**: instance method of <code>[GeeoHTTP](#GeeoHTTP)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| agentId | <code>string</code> | The ID to use for the agent |
+| viewPortId | <code>string</code> | The ID to use for the viewport |
+
 <a name="ws"></a>
 
 ## ws : <code>WebSocket</code>
