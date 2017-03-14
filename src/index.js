@@ -1,8 +1,8 @@
-import EventEmitter from 'wolfy87-eventemitter'
-import fetch from 'whatwg-fetch'
+import * as EventEmitter from 'wolfy87-eventemitter'
+import * as fetch from 'whatwg-fetch'
 
 /**
- * GeeoWS helps managing a Websocket connection to a Geeo instance.
+ * GeeoWS helps manage a Websocket connection to a Geeo instance.
  * 
  * Some GeeoWS connections allow the use of .view to watch objects, some allow the move() function, 
  * some allow the creation of POIs or AirBeacons, but some don't: it all depends on the capabilities offered
@@ -11,7 +11,7 @@ import fetch from 'whatwg-fetch'
  * @property {Websocket} ws - the actual socket
  * @property {View} view - the view object
  */
-class GeeoWS extends EventEmitter {
+export class GeeoWS extends EventEmitter {
 
 	/**
 	 * Creates a new GeeoWS
@@ -36,33 +36,33 @@ class GeeoWS extends EventEmitter {
 	connect(token) {
 		this.ws = new WebSocket('${this.wsUrl}?token=${token}')
 
-		this.ws.on("connect", ()=> {
+		this.ws.on("connect", () => {
 			/**
 			 * Connect event when the websocket is connected
 			 * @event GeeoWS#connect
 			 */
 			this.emit("connect")
 		})
-		this.ws.on("error", (err)=> {
+		this.ws.on("error", (err) => {
 			/**
 			 * Error event when an error occurs on the websocket
 			 * @event GeeoWS#error
-			 * */
+			 */
 			this.emit("error", err)
 		})
-		this.ws.on("message", (message)=> {
+		this.ws.on("message", (message) => {
 			arr = JSON.parse(message)
 			if (arr.error) {
 				return this.parent.emit("error", arr)
 			}
-			this._receiveMessage(message)
+			this.view._receiveMessage(message)
 			/**
 			 * Event sent when the view is updated
 			 * @event GeeoWS#viewUpdated
 			 */
 			this.emit("viewUpdated")
 		})
-		this.ws.on("close", (err)=> {
+		this.ws.on("close", (err) => {
 			/**
 			 * Close event when the websocket is closed
 			 * @event GeeoWS#close
@@ -78,12 +78,12 @@ class GeeoWS extends EventEmitter {
 	 */
 	move(lon, lat) {
 		this.position = [lon, lat]
-		this.ws.send(JSON.stringify({AgentPosition: this.position}))
+		this.ws.send(JSON.stringify({ AgentPosition: this.position }))
 	}
 
 	/**
 	 * Get the current agent location
-	 * @returns An array with [lon, lat]
+	 * @returns {number[]} an array with [lon, lat]
 	 */
 	getPosition() {
 		return this.position
@@ -94,7 +94,7 @@ class GeeoWS extends EventEmitter {
 	 * @param {POI} poi - the point of interest to add
 	 */
 	addPoi(poi) {
-		this.ws.send(JSON.stringify({createPOI: poi}))
+		this.ws.send(JSON.stringify({ createPOI: poi }))
 	}
 
 	/**
@@ -102,7 +102,7 @@ class GeeoWS extends EventEmitter {
 	 * @param {POI} poi - the point of interest to remove
 	 */
 	removePoi(poi) {
-		this.ws.send(JSON.stringify({removePOI: poi}))
+		this.ws.send(JSON.stringify({ removePOI: poi }))
 	}
 
 	/**
@@ -110,7 +110,7 @@ class GeeoWS extends EventEmitter {
 	 * @param {AirBeacon} ab - the air beacon to add
 	 */
 	addAirBeacon(ab) {
-		this.ws.send(JSON.stringify({createAirBeacon: ab}))
+		this.ws.send(JSON.stringify({ createAirBeacon: ab }))
 	}
 
 	/**
@@ -118,7 +118,7 @@ class GeeoWS extends EventEmitter {
 	 * @param {AirBeacon} ab - the air beacon to remove
 	 */
 	removeAirBeacon(ab) {
-		this.ws.send(JSON.stringify({removeAirBeacon: ab}))
+		this.ws.send(JSON.stringify({ removeAirBeacon: ab }))
 	}
 
 	/**
@@ -134,7 +134,7 @@ class GeeoWS extends EventEmitter {
  * You can use it only if your token allows it.
  * @extends EventEmitter
  */
-class View extends EventEmitter {
+export class View extends EventEmitter {
 	/**
 	 * @private
 	 * @param {GeeoWS} parent 
@@ -156,15 +156,39 @@ class View extends EventEmitter {
 	 */
 	move(lon1, lat1, lon2, lat2) {
 		this.position = [lon1, lat1, lon2, lat2]
-		this.ws.send(JSON.stringify({ZoomWindowPosition: this.position}))
+		this.ws.send(JSON.stringify({ ZoomWindowPosition: this.position }))
 	}
 
 	/**
 	 * Get the current Viewport
-	 * @returns An array with [lon1, lat1, lon2, lat2]
+	 * @returns {number[]} an array with [lon1, lat1, lon2, lat2]
 	 */
 	getPosition() {
 		return this.position
+	}
+
+	/**
+	 * Returns all points of interest in the view
+	 * @returns {Array.POI} the array of pois
+	 */
+	pois() {
+		let result = []
+		for (let [k, v] of this.pois) {
+			result.push(v)
+		}
+		return result
+	}
+
+	/**
+	 * Returns all agents in the view
+	 * @returns {Array.Agent} the array of agents
+	 */
+	agents() {
+		let result = []
+		for (let [k, v] of this.agents) {
+			result.push(v)
+		}
+		return result
 	}
 
 	/** 
@@ -177,7 +201,7 @@ class View extends EventEmitter {
 	 * @fires View#poiLeft
 	 */
 	_receiveMessage(message) {
-		arr.forEach((update)=> {
+		arr.forEach((update) => {
 			if (update.agent_id) {
 				if (update.entered) {
 					const agent = new Agent(update.agent_id, update.pos, update.publicData)
@@ -186,24 +210,33 @@ class View extends EventEmitter {
 					 * Event sent when a new agent becomes visible in the view
 					 * @event View#agentEntered
 					 * @type {Agent}
+ 					 * @property {string} id - the ID of the agent
+ 					 * @property {number[]} pos - the position of the agent as [lon, lat]
+ 					 * @property {Object} publicData - the public data of the agent 
 					 */
 					this.emit("agentEntered", agent)
 				} else if (update.left) {
-					agent = this.agents[update.agent_id]
+					const agent = this.agents[update.agent_id]
 					/**
 					 * Event sent when an agent becomes invisible in the view
 					 * @event View#agentLeft
 					 * @type {Agent}
+ 					 * @property {string} id - the ID of the agent
+ 					 * @property {number[]} pos - the position of the agent as [lon, lat]
+ 					 * @property {Object} publicData - the public data of the agent 
 					 */
 					this.emit("agentLeft", agent)
-					delete(this.agents, agent.id)
+					delete (this.agents, agent.id)
 				} else {
-					agent = this.agents[update.agent_id]
+					const agent = this.agents[update.agent_id]
 					agent.pos = update.pos
 					/**
 					 * Event sent when an agent moves
 					 * @event View#agentMoved
 					 * @type {Agent}
+ 					 * @property {string} id - the ID of the agent
+ 					 * @property {number[]} pos - the position of the agent as [lon, lat]
+ 					 * @property {Object} publicData - the public data of the agent 
 					 */
 					this.emit("agentMoved", agent)
 				}
@@ -215,24 +248,36 @@ class View extends EventEmitter {
 					 * Event sent when a new POI becomes visible in the view
 					 * @event View#poiEntered
 					 * @type {POI}
+					 * @property {string} id - the ID of the POI
+					 * @property {number[]} pos - the position of the POI as [lon, lat]
+				 	 * @property {Object} publicData - the public data of the POI 
+					 * @property {string} creator - the ID of the creator of the POI
 					 */
 					this.emit("poiEntered", poi)
 				} else if (update.left) {
-					poi = this.agents[update.poi_id]
+					const poi = this.agents[update.poi_id]
 					/**
 					 * Event sent when a POI becomes invisible for the view
 					 * @event View#poiLeft
 					 * @type {POI}
+					 * @property {string} id - the ID of the POI
+					 * @property {number[]} pos - the position of the POI as [lon, lat]
+				 	 * @property {Object} publicData - the public data of the POI 
+					 * @property {string} creator - the ID of the creator of the POI
 					 */
 					this.emit("poiLeft", poi)
-					delete(this.agents, poi.id)
+					delete (this.agents, poi.id)
 				} else {
-					poi = this.agents[update.poi_id]
+					const poi = this.agents[update.poi_id]
 					poi.pos = update.pos
 					/**
 					 * Event sent when a POI moves
 					 * @event View#poiMoved
 					 * @type {POI}
+					 * @property {string} id - the ID of the POI
+					 * @property {number[]} pos - the position of the POI as [lon, lat]
+				 	 * @property {Object} publicData - the public data of the POI 
+					 * @property {string} creator - the ID of the creator of the POI
 					 */
 					this.emit("poiMoved", update)
 				}
@@ -244,10 +289,10 @@ class View extends EventEmitter {
 /**
  * Agent models a transient moving agent
  * @property {string} id - the ID of the agent
- * @property {Array} pos - the position of the agent as [lon, lat]
+ * @property {number[]} pos - the position of the agent as [lon, lat]
  * @property {Object} publicData - the public data of the agent 
  */
-class Agent {
+export class Agent {
 	constructor(id, pos, publicData) {
 		this.id = id
 		this.pos = pos
@@ -258,11 +303,11 @@ class Agent {
 /**
  * POI models a persistent immovable point of interest
  * @property {string} id - the ID of the POI
- * @property {Array} pos - the position of the POI as [lon, lat]
+ * @property {number[]} pos - the position of the POI as [lon, lat]
  * @property {Object} publicData - the public data of the POI 
  * @property {string} creator - the ID of the creator of the POI
  */
-class POI {
+export class POI {
 	constructor(id, pos, publicData, creator) {
 		this.id = id
 		this.pos = pos
@@ -274,11 +319,11 @@ class POI {
 /**
  * AirBeacon models a persistent immovable Air Beacon
  * @property {string} id - the ID of the AirBeacon
- * @property {Array} pos - the position of the AirBeacon as [lon1, lat1, lon2, lat2]
+ * @property {number[]} pos - the position of the AirBeacon as [lon1, lat1, lon2, lat2]
  * @property {Object} publicData - the public data of the AirBeacon 
  * @property {string} creator - the ID of the creator of the AirBeacon
  */
-class AirBeacon {
+export class AirBeacon {
 	constructor(id, pos, publicData, creator) {
 		this.id = id
 		this.pos = pos
@@ -290,7 +335,7 @@ class AirBeacon {
 /**
  * GeeoHTTP let's you connect to the Geeo HTTP RESTful API
  */
-class GeeoHTTP {
+export class GeeoHTTP {
 
 	/**
 	 * Creates a new HTTP connection to Geeo
@@ -307,13 +352,13 @@ class GeeoHTTP {
 	 */
 	getGuestToken(agentId, viewPortId) {
 		return fetch(`${this.httpURL}/api/dev/token?zwId=${viewPortId}&agId=${agentId}`)
-		.then(function (response) {
-			if (response.ok) {
-				return response.text()
-			} else {
-				throw new Error(`Can't get JWT Token (status=${response.status})`)
-			}
-		})
+			.then(function (response) {
+				if (response.ok) {
+					return response.text()
+				} else {
+					throw new Error(`Can't get JWT Token (status=${response.status})`)
+				}
+			})
 	}
 
 }

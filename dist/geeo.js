@@ -1034,17 +1034,24 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*!
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.GeeoHTTP = exports.AirBeacon = exports.POI = exports.Agent = exports.View = exports.GeeoWS = undefined;
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _wolfy87Eventemitter = __webpack_require__(1);
 
-var _wolfy87Eventemitter2 = _interopRequireDefault(_wolfy87Eventemitter);
+var EventEmitter = _interopRequireWildcard(_wolfy87Eventemitter);
 
 var _whatwgFetch = __webpack_require__(0);
 
-var _whatwgFetch2 = _interopRequireDefault(_whatwgFetch);
+var fetch = _interopRequireWildcard(_whatwgFetch);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1053,14 +1060,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * GeeoWS representing a Websocket connection to a Geeo instance.
- * The capabilities of this connection depend on the JWT webtoken passed to connect().
- * Some GeeoWS connections allow the use of .view to watch objects, some don't.
- * Some GeeoWS connections allow the move() function, some don't.
- * Some GeeoWS connections allow the creation of POIs or AirBeacons, some don't.
+ * GeeoWS helps manage a Websocket connection to a Geeo instance.
+ * 
+ * Some GeeoWS connections allow the use of .view to watch objects, some allow the move() function, 
+ * some allow the creation of POIs or AirBeacons, but some don't: it all depends on the capabilities offered
+ * by the token used in GeeoWS#connect.
  * @extends EventEmitter
+ * @property {Websocket} ws - the actual socket
+ * @property {View} view - the view object
  */
-var GeeoWS = function (_EventEmitter) {
+var GeeoWS = exports.GeeoWS = function (_EventEmitter) {
 	_inherits(GeeoWS, _EventEmitter);
 
 	/**
@@ -1073,10 +1082,8 @@ var GeeoWS = function (_EventEmitter) {
 		var _this = _possibleConstructorReturn(this, (GeeoWS.__proto__ || Object.getPrototypeOf(GeeoWS)).call(this));
 
 		_this.wsURL = wsURL;
-		/** @member {WebSocket} ws - The actual websocket */
 		_this.ws = null;
 		_this.position = null;
-		/** @member {View} view - The View object to interact with the viewport */
 		_this.view = new View(_this);
 		return _this;
 	}
@@ -1109,7 +1116,7 @@ var GeeoWS = function (_EventEmitter) {
 				/**
      * Error event when an error occurs on the websocket
      * @event GeeoWS#error
-     * */
+     */
 				_this2.emit("error", err);
 			});
 			this.ws.on("message", function (message) {
@@ -1117,7 +1124,7 @@ var GeeoWS = function (_EventEmitter) {
 				if (arr.error) {
 					return _this2.parent.emit("error", arr);
 				}
-				_this2._receiveMessage(message);
+				_this2.view._receiveMessage(message);
 				/**
      * Event sent when the view is updated
      * @event GeeoWS#viewUpdated
@@ -1148,7 +1155,7 @@ var GeeoWS = function (_EventEmitter) {
 
 		/**
    * Get the current agent location
-   * @returns An array with [lon, lat]
+   * @returns {number[]} an array with [lon, lat]
    */
 
 	}, {
@@ -1213,7 +1220,7 @@ var GeeoWS = function (_EventEmitter) {
 	}]);
 
 	return GeeoWS;
-}(_wolfy87Eventemitter2.default);
+}(EventEmitter);
 
 /**
  * View contains all the features related to the viewport.
@@ -1222,7 +1229,7 @@ var GeeoWS = function (_EventEmitter) {
  */
 
 
-var View = function (_EventEmitter2) {
+var View = exports.View = function (_EventEmitter2) {
 	_inherits(View, _EventEmitter2);
 
 	/**
@@ -1259,13 +1266,91 @@ var View = function (_EventEmitter2) {
 
 		/**
    * Get the current Viewport
-   * @returns An array with [lon1, lat1, lon2, lat2]
+   * @returns {number[]} an array with [lon1, lat1, lon2, lat2]
    */
 
 	}, {
 		key: 'getPosition',
 		value: function getPosition() {
 			return this.position;
+		}
+
+		/**
+   * Returns all points of interest in the view
+   * @returns {Array.POI} the array of pois
+   */
+
+	}, {
+		key: 'pois',
+		value: function pois() {
+			var result = [];
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = this.pois[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var _step$value = _slicedToArray(_step.value, 2),
+					    k = _step$value[0],
+					    v = _step$value[1];
+
+					result.push(v);
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+
+			return result;
+		}
+
+		/**
+   * Returns all agents in the view
+   * @returns {Array.Agent} the array of agents
+   */
+
+	}, {
+		key: 'agents',
+		value: function agents() {
+			var result = [];
+			var _iteratorNormalCompletion2 = true;
+			var _didIteratorError2 = false;
+			var _iteratorError2 = undefined;
+
+			try {
+				for (var _iterator2 = this.agents[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+					var _step2$value = _slicedToArray(_step2.value, 2),
+					    k = _step2$value[0],
+					    v = _step2$value[1];
+
+					result.push(v);
+				}
+			} catch (err) {
+				_didIteratorError2 = true;
+				_iteratorError2 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion2 && _iterator2.return) {
+						_iterator2.return();
+					}
+				} finally {
+					if (_didIteratorError2) {
+						throw _iteratorError2;
+					}
+				}
+			}
+
+			return result;
 		}
 
 		/** 
@@ -1286,59 +1371,80 @@ var View = function (_EventEmitter2) {
 			arr.forEach(function (update) {
 				if (update.agent_id) {
 					if (update.entered) {
-						var _agent = new Agent(update.agent_id, update.pos, update.publicData);
-						_this4.agents[_agent.id] = _agent;
+						var agent = new Agent(update.agent_id, update.pos, update.publicData);
+						_this4.agents[agent.id] = agent;
 						/**
        * Event sent when a new agent becomes visible in the view
        * @event View#agentEntered
        * @type {Agent}
+      	 * @property {string} id - the ID of the agent
+      	 * @property {number[]} pos - the position of the agent as [lon, lat]
+      	 * @property {Object} publicData - the public data of the agent 
        */
-						_this4.emit("agentEntered", _agent);
+						_this4.emit("agentEntered", agent);
 					} else if (update.left) {
-						agent = _this4.agents[update.agent_id];
+						var _agent = _this4.agents[update.agent_id];
 						/**
        * Event sent when an agent becomes invisible in the view
        * @event View#agentLeft
        * @type {Agent}
+      	 * @property {string} id - the ID of the agent
+      	 * @property {number[]} pos - the position of the agent as [lon, lat]
+      	 * @property {Object} publicData - the public data of the agent 
        */
-						_this4.emit("agentLeft", agent);
-						delete (_this4.agents, agent.id);
+						_this4.emit("agentLeft", _agent);
+						delete (_this4.agents, _agent.id);
 					} else {
-						agent = _this4.agents[update.agent_id];
-						agent.pos = update.pos;
+						var _agent2 = _this4.agents[update.agent_id];
+						_agent2.pos = update.pos;
 						/**
        * Event sent when an agent moves
        * @event View#agentMoved
        * @type {Agent}
+      	 * @property {string} id - the ID of the agent
+      	 * @property {number[]} pos - the position of the agent as [lon, lat]
+      	 * @property {Object} publicData - the public data of the agent 
        */
-						_this4.emit("agentMoved", agent);
+						_this4.emit("agentMoved", _agent2);
 					}
 				} else if (update.poi_id) {
 					if (update.entered) {
-						var _poi = new POI(update.poi_id, update.pos, update.publicData);
-						_this4.pois[_poi.id] = _poi;
+						var poi = new POI(update.poi_id, update.pos, update.publicData);
+						_this4.pois[poi.id] = poi;
 						/**
        * Event sent when a new POI becomes visible in the view
        * @event View#poiEntered
        * @type {POI}
+       * @property {string} id - the ID of the POI
+       * @property {number[]} pos - the position of the POI as [lon, lat]
+      	 * @property {Object} publicData - the public data of the POI 
+       * @property {string} creator - the ID of the creator of the POI
        */
-						_this4.emit("poiEntered", _poi);
+						_this4.emit("poiEntered", poi);
 					} else if (update.left) {
-						poi = _this4.agents[update.poi_id];
+						var _poi = _this4.agents[update.poi_id];
 						/**
        * Event sent when a POI becomes invisible for the view
        * @event View#poiLeft
        * @type {POI}
+       * @property {string} id - the ID of the POI
+       * @property {number[]} pos - the position of the POI as [lon, lat]
+      	 * @property {Object} publicData - the public data of the POI 
+       * @property {string} creator - the ID of the creator of the POI
        */
-						_this4.emit("poiLeft", poi);
-						delete (_this4.agents, poi.id);
+						_this4.emit("poiLeft", _poi);
+						delete (_this4.agents, _poi.id);
 					} else {
-						poi = _this4.agents[update.poi_id];
-						poi.pos = update.pos;
+						var _poi2 = _this4.agents[update.poi_id];
+						_poi2.pos = update.pos;
 						/**
        * Event sent when a POI moves
        * @event View#poiMoved
        * @type {POI}
+       * @property {string} id - the ID of the POI
+       * @property {number[]} pos - the position of the POI as [lon, lat]
+      	 * @property {Object} publicData - the public data of the POI 
+       * @property {string} creator - the ID of the creator of the POI
        */
 						_this4.emit("poiMoved", update);
 					}
@@ -1348,14 +1454,17 @@ var View = function (_EventEmitter2) {
 	}]);
 
 	return View;
-}(_wolfy87Eventemitter2.default);
+}(EventEmitter);
 
 /**
  * Agent models a transient moving agent
+ * @property {string} id - the ID of the agent
+ * @property {number[]} pos - the position of the agent as [lon, lat]
+ * @property {Object} publicData - the public data of the agent 
  */
 
 
-var Agent = function Agent(id, pos, publicData) {
+var Agent = exports.Agent = function Agent(id, pos, publicData) {
 	_classCallCheck(this, Agent);
 
 	this.id = id;
@@ -1365,10 +1474,14 @@ var Agent = function Agent(id, pos, publicData) {
 
 /**
  * POI models a persistent immovable point of interest
+ * @property {string} id - the ID of the POI
+ * @property {number[]} pos - the position of the POI as [lon, lat]
+ * @property {Object} publicData - the public data of the POI 
+ * @property {string} creator - the ID of the creator of the POI
  */
 
 
-var POI = function POI(id, pos, publicData, creator) {
+var POI = exports.POI = function POI(id, pos, publicData, creator) {
 	_classCallCheck(this, POI);
 
 	this.id = id;
@@ -1379,10 +1492,14 @@ var POI = function POI(id, pos, publicData, creator) {
 
 /**
  * AirBeacon models a persistent immovable Air Beacon
+ * @property {string} id - the ID of the AirBeacon
+ * @property {number[]} pos - the position of the AirBeacon as [lon1, lat1, lon2, lat2]
+ * @property {Object} publicData - the public data of the AirBeacon 
+ * @property {string} creator - the ID of the creator of the AirBeacon
  */
 
 
-var AirBeacon = function AirBeacon(id, pos, publicData, creator) {
+var AirBeacon = exports.AirBeacon = function AirBeacon(id, pos, publicData, creator) {
 	_classCallCheck(this, AirBeacon);
 
 	this.id = id;
@@ -1396,7 +1513,7 @@ var AirBeacon = function AirBeacon(id, pos, publicData, creator) {
  */
 
 
-var GeeoHTTP = function () {
+var GeeoHTTP = exports.GeeoHTTP = function () {
 
 	/**
   * Creates a new HTTP connection to Geeo
@@ -1418,7 +1535,7 @@ var GeeoHTTP = function () {
 	_createClass(GeeoHTTP, [{
 		key: 'getGuestToken',
 		value: function getGuestToken(agentId, viewPortId) {
-			return (0, _whatwgFetch2.default)(this.httpURL + '/api/dev/token?zwId=' + viewPortId + '&agId=' + agentId).then(function (response) {
+			return fetch(this.httpURL + '/api/dev/token?zwId=' + viewPortId + '&agId=' + agentId).then(function (response) {
 				if (response.ok) {
 					return response.text();
 				} else {

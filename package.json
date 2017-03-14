@@ -2,7 +2,7 @@
   "name": "geeo-javascript",
   "version": "1.0.0",
   "description": "Geeo SDK for javascript",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "build": "babel src -d lib && webpack lib/index.js dist/geeo.js && uglifyjs dist/geeo.js -o dist/geeo.min.js",
     "doc": "jsdoc2md src/index.js > doc/api.md"

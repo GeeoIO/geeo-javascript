@@ -2,7 +2,7 @@
 
 Javascript Client for Geeo.io
 
-# JS API proposal
+# JS API
 
 API in [doc folder](./doc/api.md)
 
@@ -35,12 +35,11 @@ geeo.on('connect', function() {
 })
 
 geeo.on('viewUpdated', function() {
-	geeo.view.all() // agents and pois
-	geeo.view.pois() // pois only
-	geeo.view.agents() // agents
+	geeo.view.pois() // pois in the view
+	geeo.view.agents() // agents in the view
 
-	geeo.addPOI(poi)
-	geeo.addAirBeacon(ab)
+	geeo.addPOI(new POI(id, [lon, lat], publicData, creator))
+	geeo.addAirBeacon(new AirBeacon(id, [lon1, lat1, lon2, lat2], publicData, creator))
 	geeo.removePOI(poi)
 	geeo.removeAirBeacon(ab)
 })
@@ -52,7 +51,10 @@ geeo.view.on('agentLeft', function(agent){})
 geeo.view.on('poiEntered', function(poi){})
 geeo.view.on('poiMoved', function(poi){})
 geeo.view.on('poiLeft', function(poi){})
+```
 
+Not implemented yet:
+```
 geeoHttp.setToken(token) // necessary to use the following features
 geeoHttp.createPOI(poi)
 geeoHTTP.removePOI(poi)
