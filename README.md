@@ -4,6 +4,8 @@ Javascript Client for Geeo.io
 
 # JS API proposal
 
+API in [doc folder](./doc/api.md)
+
 Note: functions I'm not allowed to use with my token are just ignored by the server.
 
 ```
@@ -32,7 +34,7 @@ geeo.on('connect', function() {
 	geeo.getPosition() // null if not set [lon, lat] otherwise
 })
 
-geeo.on('view.updated', function() {
+geeo.on('viewUpdated', function() {
 	geeo.view.all() // agents and pois
 	geeo.view.pois() // pois only
 	geeo.view.agents() // agents
@@ -43,13 +45,13 @@ geeo.on('view.updated', function() {
 	geeo.removeAirBeacon(ab)
 })
 
-geeo.view.on('agent.entered', function(agent){})
-geeo.view.on('agent.moved', function(agent){})
-geeo.view.on('agent.left', function(agent){})
+geeo.view.on('agentEntered', function(agent){})
+geeo.view.on('agentMoved', function(agent){})
+geeo.view.on('agentLeft', function(agent){})
 
-geeo.view.on('poi.entered', function(poi){})
-geeo.view.on('poi.moved', function(poi){})
-geeo.view.on('poi.left', function(poi){})
+geeo.view.on('poiEntered', function(poi){})
+geeo.view.on('poiMoved', function(poi){})
+geeo.view.on('poiLeft', function(poi){})
 
 geeoHttp.setToken(token) // necessary to use the following features
 geeoHttp.createPOI(poi)
