@@ -2,11 +2,10 @@
 
 <dl>
 <dt><a href="#GeeoWS">GeeoWS</a> ⇐ <code>EventEmitter</code></dt>
-<dd><p>GeeoWS representing a Websocket connection to a Geeo instance.
-The capabilities of this connection depend on the JWT webtoken passed to connect().
-Some GeeoWS connections allow the use of .view to watch objects, some don&#39;t.
-Some GeeoWS connections allow the move() function, some don&#39;t.
-Some GeeoWS connections allow the creation of POIs or AirBeacons, some don&#39;t.</p>
+<dd><p>GeeoWS helps managing a Websocket connection to a Geeo instance.</p>
+<p>Some GeeoWS connections allow the use of .view to watch objects, some allow the move() function, 
+some allow the creation of POIs or AirBeacons, but some don&#39;t: it all depends on the capabilities offered
+by the token used in GeeoWS#connect.</p>
 </dd>
 <dt><a href="#View">View</a> ⇐ <code>EventEmitter</code></dt>
 <dd><p>View contains all the features related to the viewport.
@@ -26,28 +25,24 @@ You can use it only if your token allows it.</p>
 </dd>
 </dl>
 
-## Members
-
-<dl>
-<dt><a href="#ws">ws</a> : <code>WebSocket</code></dt>
-<dd><p>The actual websocket</p>
-</dd>
-<dt><a href="#view">view</a> : <code><a href="#View">View</a></code></dt>
-<dd><p>The View object to interact with the viewport</p>
-</dd>
-</dl>
-
 <a name="GeeoWS"></a>
 
 ## GeeoWS ⇐ <code>EventEmitter</code>
-GeeoWS representing a Websocket connection to a Geeo instance.
-The capabilities of this connection depend on the JWT webtoken passed to connect().
-Some GeeoWS connections allow the use of .view to watch objects, some don't.
-Some GeeoWS connections allow the move() function, some don't.
-Some GeeoWS connections allow the creation of POIs or AirBeacons, some don't.
+GeeoWS helps managing a Websocket connection to a Geeo instance.
+
+Some GeeoWS connections allow the use of .view to watch objects, some allow the move() function, 
+some allow the creation of POIs or AirBeacons, but some don't: it all depends on the capabilities offered
+by the token used in GeeoWS#connect.
 
 **Kind**: global class  
 **Extends**: <code>EventEmitter</code>  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| ws | <code>Websocket</code> | the actual socket |
+| view | <code>[View](#View)</code> | the view object |
+
 
 * [GeeoWS](#GeeoWS) ⇐ <code>EventEmitter</code>
     * [new GeeoWS(wsURL)](#new_GeeoWS_new)
@@ -270,12 +265,29 @@ Event sent when a POI moves
 Agent models a transient moving agent
 
 **Kind**: global class  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | the ID of the agent |
+| pos | <code>Array</code> | the position of the agent as [lon, lat] |
+| publicData | <code>Object</code> | the public data of the agent |
+
 <a name="POI"></a>
 
 ## POI
 POI models a persistent immovable point of interest
 
 **Kind**: global class  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | the ID of the POI |
+| pos | <code>Array</code> | the position of the POI as [lon, lat] |
+| publicData | <code>Object</code> | the public data of the POI |
+| creator | <code>string</code> | the ID of the creator of the POI |
+
 <a name="AirBeacon"></a>
 
 ## AirBeacon
@@ -315,15 +327,3 @@ Get a guest token from server. Only possible with development routes allowed
 | agentId | <code>string</code> | The ID to use for the agent |
 | viewPortId | <code>string</code> | The ID to use for the viewport |
 
-<a name="ws"></a>
-
-## ws : <code>WebSocket</code>
-The actual websocket
-
-**Kind**: global variable  
-<a name="view"></a>
-
-## view : <code>[View](#View)</code>
-The View object to interact with the viewport
-
-**Kind**: global variable  

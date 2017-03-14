@@ -2,12 +2,14 @@ import EventEmitter from 'wolfy87-eventemitter'
 import fetch from 'whatwg-fetch'
 
 /**
- * GeeoWS representing a Websocket connection to a Geeo instance.
- * The capabilities of this connection depend on the JWT webtoken passed to connect().
- * Some GeeoWS connections allow the use of .view to watch objects, some don't.
- * Some GeeoWS connections allow the move() function, some don't.
- * Some GeeoWS connections allow the creation of POIs or AirBeacons, some don't.
+ * GeeoWS helps managing a Websocket connection to a Geeo instance.
+ * 
+ * Some GeeoWS connections allow the use of .view to watch objects, some allow the move() function, 
+ * some allow the creation of POIs or AirBeacons, but some don't: it all depends on the capabilities offered
+ * by the token used in GeeoWS#connect.
  * @extends EventEmitter
+ * @property {Websocket} ws - the actual socket
+ * @property {View} view - the view object
  */
 class GeeoWS extends EventEmitter {
 
@@ -18,10 +20,8 @@ class GeeoWS extends EventEmitter {
 	constructor(wsURL) {
 		super()
 		this.wsURL = wsURL
-		/** @member {WebSocket} ws - The actual websocket */
 		this.ws = null
 		this.position = null
-		/** @member {View} view - The View object to interact with the viewport */
 		this.view = new View(this)
 	}
 
@@ -243,6 +243,9 @@ class View extends EventEmitter {
 
 /**
  * Agent models a transient moving agent
+ * @property {string} id - the ID of the agent
+ * @property {Array} pos - the position of the agent as [lon, lat]
+ * @property {Object} publicData - the public data of the agent 
  */
 class Agent {
 	constructor(id, pos, publicData) {
@@ -254,6 +257,10 @@ class Agent {
 
 /**
  * POI models a persistent immovable point of interest
+ * @property {string} id - the ID of the POI
+ * @property {Array} pos - the position of the POI as [lon, lat]
+ * @property {Object} publicData - the public data of the POI 
+ * @property {string} creator - the ID of the creator of the POI
  */
 class POI {
 	constructor(id, pos, publicData, creator) {
@@ -266,6 +273,10 @@ class POI {
 
 /**
  * AirBeacon models a persistent immovable Air Beacon
+ * @property {string} id - the ID of the AirBeacon
+ * @property {Array} pos - the position of the AirBeacon as [lon1, lat1, lon2, lat2]
+ * @property {Object} publicData - the public data of the AirBeacon 
+ * @property {string} creator - the ID of the creator of the AirBeacon
  */
 class AirBeacon {
 	constructor(id, pos, publicData, creator) {
