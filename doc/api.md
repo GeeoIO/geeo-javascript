@@ -53,8 +53,8 @@ by the token used in GeeoWS#connect.
     * [.connect(token)](#GeeoWS+connect)
     * [.move(lon, lat)](#GeeoWS+move)
     * [.getPosition()](#GeeoWS+getPosition) ⇒ <code>Array.&lt;number&gt;</code>
-    * [.addPoi(poi)](#GeeoWS+addPoi)
-    * [.removePoi(poi)](#GeeoWS+removePoi)
+    * [.addPOI(poi)](#GeeoWS+addPOI)
+    * [.removePOI(poi)](#GeeoWS+removePOI)
     * [.addAirBeacon(ab)](#GeeoWS+addAirBeacon)
     * [.removeAirBeacon(ab)](#GeeoWS+removeAirBeacon)
     * [.close()](#GeeoWS+close)
@@ -104,9 +104,9 @@ Get the current agent location
 
 **Kind**: instance method of <code>[GeeoWS](#GeeoWS)</code>  
 **Returns**: <code>Array.&lt;number&gt;</code> - an array with [lon, lat]  
-<a name="GeeoWS+addPoi"></a>
+<a name="GeeoWS+addPOI"></a>
 
-### geeoWS.addPoi(poi)
+### geeoWS.addPOI(poi)
 Add a point of interest
 
 **Kind**: instance method of <code>[GeeoWS](#GeeoWS)</code>  
@@ -115,9 +115,9 @@ Add a point of interest
 | --- | --- | --- |
 | poi | <code>[POI](#POI)</code> | the point of interest to add |
 
-<a name="GeeoWS+removePoi"></a>
+<a name="GeeoWS+removePOI"></a>
 
-### geeoWS.removePoi(poi)
+### geeoWS.removePOI(poi)
 Remove a point of interest
 
 **Kind**: instance method of <code>[GeeoWS](#GeeoWS)</code>  
@@ -188,8 +188,8 @@ Close event when the websocket is closed
     * [.connect(token)](#GeeoWS+connect)
     * [.move(lon, lat)](#GeeoWS+move)
     * [.getPosition()](#GeeoWS+getPosition) ⇒ <code>Array.&lt;number&gt;</code>
-    * [.addPoi(poi)](#GeeoWS+addPoi)
-    * [.removePoi(poi)](#GeeoWS+removePoi)
+    * [.addPOI(poi)](#GeeoWS+addPOI)
+    * [.removePOI(poi)](#GeeoWS+removePOI)
     * [.addAirBeacon(ab)](#GeeoWS+addAirBeacon)
     * [.removeAirBeacon(ab)](#GeeoWS+removeAirBeacon)
     * [.close()](#GeeoWS+close)
@@ -239,9 +239,9 @@ Get the current agent location
 
 **Kind**: instance method of <code>[GeeoWS](#GeeoWS)</code>  
 **Returns**: <code>Array.&lt;number&gt;</code> - an array with [lon, lat]  
-<a name="GeeoWS+addPoi"></a>
+<a name="GeeoWS+addPOI"></a>
 
-### geeoWS.addPoi(poi)
+### geeoWS.addPOI(poi)
 Add a point of interest
 
 **Kind**: instance method of <code>[GeeoWS](#GeeoWS)</code>  
@@ -250,9 +250,9 @@ Add a point of interest
 | --- | --- | --- |
 | poi | <code>[POI](#POI)</code> | the point of interest to add |
 
-<a name="GeeoWS+removePoi"></a>
+<a name="GeeoWS+removePOI"></a>
 
-### geeoWS.removePoi(poi)
+### geeoWS.removePOI(poi)
 Remove a point of interest
 
 **Kind**: instance method of <code>[GeeoWS](#GeeoWS)</code>  
@@ -333,7 +333,6 @@ You can use it only if your token allows it.
     * ["agentMoved"](#View+event_agentMoved)
     * ["poiEntered"](#View+event_poiEntered)
     * ["poiLeft"](#View+event_poiLeft)
-    * ["poiMoved"](#View+event_poiMoved)
 
 <a name="new_View_new"></a>
 
@@ -439,21 +438,6 @@ Event sent when a new POI becomes visible in the view
 
 ### "poiLeft"
 Event sent when a POI becomes invisible for the view
-
-**Kind**: event emitted by <code>[View](#View)</code>  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| id | <code>string</code> | the ID of the POI |
-| pos | <code>Array.&lt;number&gt;</code> | the position of the POI as [lon, lat] |
-| publicData | <code>Object</code> | the public data of the POI |
-| creator | <code>string</code> | the ID of the creator of the POI |
-
-<a name="View+event_poiMoved"></a>
-
-### "poiMoved"
-Event sent when a POI moves
 
 **Kind**: event emitted by <code>[View](#View)</code>  
 **Properties**
