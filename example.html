@@ -22,90 +22,107 @@
 	<div id="map"></div>
 	<script>
 function initMap() {
-// Create a map object and specify the DOM element for display.
-var map = new google.maps.Map(document.getElementById('map'), {
-	center: { lat: 36, lng: -8 },
-	scrollwheel: false,
-	zoom: 8
-});
-
-var geeoHttp = new geeo.GeeoHTTP("http://localhost:8000")
-geeoHttp.getGuestToken("agent"+Date.now(), "view"+Date.now())
-.then(function (token) {
-	var geeoWS = new geeo.GeeoWS("ws://localhost:8000/ws")
-
-	var markers = {}
-
-	map.addListener('click', function(e) {
-		geeoWS.addPOI({
-			poi_id: "your POI "+Date.now(),
-			pos: [e.latLng.lng(), e.latLng.lat()],
-			publicData: {nothing: "special"}
-		})
+	// Create a map object and specify the DOM element for display.
+	var map = new google.maps.Map(document.getElementById('map'), {
+		center: { lat: 36, lng: -8 },
+		scrollwheel: false,
+		zoom: 8
 	});
 
-	geeoWS.view.on("poiEntered", function(poi) {
-		markers[poi.id] = new google.maps.Marker({
-			position: {lat: poi.pos[1], lng: poi.pos[0]},
-			map: map,
-			opacity: 0.3,
-			title: poi.id
-		})
-	})
-	geeoWS.view.on("poiLeft", function(poi) {
-		markers[poi.id].setMap(null)
-	})
-	geeoWS.view.on("agentEntered", function(agent) {
-		markers[agent.id] = new google.maps.Marker({
-			position: {lat: agent.pos[1], lng: agent.pos[0]},
-			map: map,
-			title: agent.id,
-			opacity: 1
-		});			
-	})
-	geeoWS.view.on("agentLeft", function(agent) {
-		if (markers[agent.id] == undefined) {
-			return
-		}	
-		markers[agent.id].setMap(null) // remove
-		delete(markers, agent.id)
-	})
-	geeoWS.view.on("agentMoved", function(agent) {
-		if (markers[agent.id] == undefined) {
-			return
-		}	
-		markers[agent.id].setPosition( {lat: agent.pos[1], lng: agent.pos[0]} )
-	})	
-	
-	geeoWS.on("connect", function() {
-		map.addListener("bounds_changed", geeo.debounce(function () {
-			var bounds = map.getBounds().toJSON()
-			geeoWS.view.move(bounds.west, bounds.south, bounds.east, bounds.north)
-		}, 500))
-		if (navigator.geolocation) {
-			navigator.geolocation.watchPosition(function(position) {
-				var pos = {
-					lat: position.coords.latitude,
-					lng: position.coords.longitude
-				};
-				map.setCenter(pos);
-				geeoWS.move(position.coords.longitude, position.coords.latitude)
-			}, function() {
-				alert("Can't determine your position, let's say you're in Tenerife")
-				geeoWS.move(-16.7173771, 28.0479823)
-			}, { enableHighAccuracy: true })
-		} else {
-			alert("No support for geolocation in your browser, let's say you're in Tenerife")
-			geeoWS.move(-16.7173771, 28.0479823)
-		}
-	})
+	// initialize a geeoHTTP client to get a token (dev feature only)
+	var geeoHttp = new geeo.GeeoHTTP("http://localhost:8000")
+	// get token, give a name to our agent and our view
+	geeoHttp.getGuestToken("agent"+Date.now(), "view"+Date.now())
+	.then(function (token) {
 
-	geeoWS.connect(token)
-}).catch(console.error)
+		// create a new WS connection to Geeo
+		var geeoWS = new geeo.GeeoWS("ws://localhost:8000/ws")
+
+		var markers = {}
+
+		// when use clicks on map, add a point of interest... Creator set by server
+		map.addListener('click', function(e) {
+			geeoWS.addPOI({
+				poi_id: "your POI "+Date.now(),
+				pos: [e.latLng.lng(), e.latLng.lat()],
+				publicData: {nothing: "special"}
+			})
+		});
+
+		// a new POI appears in view
+		geeoWS.view.on("poiEntered", function(poi) {
+			markers[poi.id] = new google.maps.Marker({
+				position: {lat: poi.pos[1], lng: poi.pos[0]},
+				map: map,
+				opacity: 0.3,
+				title: poi.id
+			})
+		})
+
+		// POI out of view
+		geeoWS.view.on("poiLeft", function(poi) {
+			markers[poi.id].setMap(null)
+			delete(markers, poi.id)
+		})
+
+		// Agent enters the view
+		geeoWS.view.on("agentEntered", function(agent) {
+			markers[agent.id] = new google.maps.Marker({
+				position: {lat: agent.pos[1], lng: agent.pos[0]},
+				map: map,
+				title: agent.id,
+				opacity: 1
+			});			
+		})
+
+		// Agent leaves the view
+		geeoWS.view.on("agentLeft", function(agent) {
+			markers[agent.id].setMap(null) // remove
+			delete(markers, agent.id)
+		})
+
+		// Agent moves inside view
+		geeoWS.view.on("agentMoved", function(agent) {
+			markers[agent.id].setPosition( {lat: agent.pos[1], lng: agent.pos[0]} )
+		})	
+		
+		// Once geeo WS is connected
+		geeoWS.on("connect", function() {
+
+			// when the bounds of the map change
+			map.addListener("bounds_changed", geeo.debounce(function () {
+				var bounds = map.getBounds().toJSON()
+				// tell Geeo View to follow map bounds
+				geeoWS.view.move(bounds.west, bounds.south, bounds.east, bounds.north)
+			}, 500))
+
+			// try geolocation in browser
+			if (navigator.geolocation) {
+				navigator.geolocation.watchPosition(function(position) {
+					var pos = {
+						lat: position.coords.latitude,
+						lng: position.coords.longitude
+					};
+					// set the center of the map, which will also trigger a change in bounds of view
+					map.setCenter(pos);
+					// move our use to his real position
+					geeoWS.move(position.coords.longitude, position.coords.latitude)
+				}, function() {
+					alert("Can't determine your position, let's say you're in Tenerife")
+					geeoWS.move(-16.7173771, 28.0479823)
+				}, { enableHighAccuracy: true })
+			} else {
+				alert("No support for geolocation in your browser, let's say you're in Tenerife")
+				geeoWS.move(-16.7173771, 28.0479823)
+			}
+		})
+		// all the magic starts now
+		geeoWS.connect(token) 
+
+	}).catch(console.error)
 }
 	</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYKPaA9Umqj7XEhu-GIKBu7b2pJFCvLKQ&callback=initMap" async
 		defer></script>
 </body>
-
 </html>
