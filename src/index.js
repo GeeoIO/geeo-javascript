@@ -1,6 +1,55 @@
 import EventEmitter from 'wolfy87-eventemitter'
 import fetch from 'whatwg-fetch'
 
+
+class GeeoWS extends EventEmitter {
+
+	constructor(wsURL) {
+		super()
+		this.wsURL = wsURL
+		this.ws = null
+		this.position = null
+		this.view = new View(this)
+	}
+
+	connect(token) {
+		this.ws = new WebSocket('${this.wsUrl}?token=${token}')
+
+		this.ws.on("connect", ()=> {
+			this.emit("connect")
+		})
+		this.ws.on("error", (err)=> {
+			this.emit("error", err)
+		})
+		this.ws.on("message", (message)=> {
+			arr = JSON.parse(message)
+			if (arr.error) {
+				return this.parent.emit("error", arr)
+			}
+			this._receiveMessage(message)
+			this.emit("view.updated")
+		})
+		this.ws.on("close", (err)=> {
+			this.emit("close", err)
+		})
+	}
+
+	move(lon, lat) {
+		this.position = [lon, lat]
+		this.ws.send(JSON.stringify({AgentPosition: this.position}))
+	}
+
+	getPosition() {
+		return this.position
+	}
+
+
+	close() {
+		this.ws.close()
+	}
+
+}
+
 class View extends EventEmitter {
 	constructor(parent) {
 		super()
@@ -51,54 +100,6 @@ class View extends EventEmitter {
 				}
 			}
 		})
-	}
-
-}
-
-class GeeoWS extends EventEmitter {
-
-	constructor(wsURL) {
-		super()
-		this.wsURL = wsURL
-		this.ws = null
-		this.position = null
-		this.view = new View(this)
-	}
-
-	connect(token) {
-		this.ws = new WebSocket('${this.wsUrl}?token=${token}')
-
-		this.ws.on("connect", ()=> {
-			this.emit("connect")
-		})
-		this.ws.on("error", (err)=> {
-			this.emit("error", err)
-		})
-		this.ws.on("message", (message)=> {
-			arr = JSON.parse(message)
-			if (arr.error) {
-				return this.parent.emit("error", arr)
-			}
-			this._receiveMessage(message)
-			this.emit("view.updated")
-		})
-		this.ws.on("close", (err)=> {
-			this.emit("close", err)
-		})
-	}
-
-	move(lon, lat) {
-		this.position = [lon, lat]
-		this.ws.send(JSON.stringify({AgentPosition: this.position}))
-	}
-
-	getPosition() {
-		return this.position
-	}
-
-
-	close() {
-		this.ws.close()
 	}
 
 }
