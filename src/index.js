@@ -239,6 +239,10 @@ export class View extends EventEmitter {
 					delete (this.agents, agent.id)
 				} else {
 					const agent = this.agents[update.agent_id]
+					if (!agent) {
+						console.log(update)
+						return
+					}
 					agent.pos = update.pos
 					/**
 					 * Event sent when an agent moves

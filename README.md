@@ -1,19 +1,20 @@
 # geeo-javascript
 
-Javascript Client for Geeo.io
+Javascript Client for Geeo.io and html5 sample.
 
-# JS API
+_Note: functions I'm not allowed to use with my token are just ignored by the server._
 
-API in [doc folder](./doc/api.md)
+# API
 
-Note: functions I'm not allowed to use with my token are just ignored by the server.
+You can find the API doc in [the doc folder](./doc/api.md).
 
+Otherwise, here's a kind of cheat sheet...
 ```
-const wsURL = "wss://demo.geeo.io"
-const httpURL = "https://demo.geeo.io"
+var wsURL = "wss://demo.geeo.io"
+var httpURL = "https://demo.geeo.io"
 
-var geeo = new GeeoWS(wsURL);
-var geeoHttp = new GeeoHTTP(httpURL);
+var geeo = new GeeoWS(wsURL)
+var geeoHttp = new GeeoHTTP(httpURL)
 
 geeoHttp.getGuestToken({name: 'chris', age: 45})
 .then( function(token) {
@@ -27,8 +28,8 @@ geeo.on('error', function (error) {
 })
 
 geeo.on('connect', function() {
-	geeo.view.move([0,0,1,1]) // lon1 lat1 lon2 lat2 (point1 lower left, point2 upper right)
-	geeo.move([0.5, 0.5]) // lon lat
+	geeo.view.move(0,0,1,1) // lon1 lat1 lon2 lat2 (point1 is SW, point2 is NE)
+	geeo.move(0.5, 0.5) // lon lat
 
 	geeo.view.getPosition() // null if not set, [lon1, lat1, lon2, lat2] otherwise
 	geeo.getPosition() // null if not set [lon, lat] otherwise
@@ -38,8 +39,8 @@ geeo.on('viewUpdated', function() {
 	geeo.view.pois() // pois in the view
 	geeo.view.agents() // agents in the view
 
-	geeo.addPOI(new POI(id, [lon, lat], publicData, creator))
-	geeo.addAirBeacon(new AirBeacon(id, [lon1, lat1, lon2, lat2], publicData, creator))
+	geeo.addPOI({id, [lon, lat], publicData})
+	geeo.addAirBeacon({id, [lon1, lat1, lon2, lat2], publicData})
 	geeo.removePOI(poi)
 	geeo.removeAirBeacon(ab)
 })
@@ -53,7 +54,7 @@ geeo.view.on('poiMoved', function(poi){})
 geeo.view.on('poiLeft', function(poi){})
 ```
 
-Not implemented yet:
+Not implemented yet in Geeo REST api, coming soon:
 ```
 geeoHttp.setToken(token) // necessary to use the following features
 geeoHttp.createPOI(poi)

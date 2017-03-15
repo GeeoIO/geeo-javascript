@@ -445,6 +445,10 @@ var View = exports.View = function (_EventEmitter2) {
 						delete (_this3.agents, _agent.id);
 					} else {
 						var _agent2 = _this3.agents[update.agent_id];
+						if (!_agent2) {
+							console.log(update);
+							return;
+						}
 						_agent2.pos = update.pos;
 						/**
        * Event sent when an agent moves
