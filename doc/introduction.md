@@ -80,7 +80,7 @@ Finally, our instances don't log at all. You can setup WebHooks if your app requ
 
 #### Authentication workflow
 
-Authentication to a Geeo Server should always rely on external authentication system. We're using JsonWebTokens to transfer trust from your system to Geeo (they must share a secret): if you have authenticated a user, sign a JsonWebToken and hand it over to the client so it can connect to Geeo. This token is also used to restrain capabilities (agent or view or both, ability to create POIs or AirBeacons) to precisely manage the level of power you're giving users.
+Authentication to a Geeo Server should always rely on an external authentication system. We're using JsonWebTokens to transfer trust from your system to Geeo (they must share a secret): if you have authenticated a user, sign a JsonWebToken and hand it over to the client so it can connect to Geeo. This token is also used to restrain capabilities (agent or view or both, ability to create POIs or AirBeacons) to precisely manage the level of power you're giving users.
 
 We're including a development-only HTTP route to obtain a token from a Geeo server, but it does not authenticate users and should be disabled in production.
 
