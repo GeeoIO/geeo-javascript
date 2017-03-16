@@ -1,14 +1,41 @@
-# geeo-javascript
+# What is Geeo.io?
 
-Javascript Client for Geeo.io and html5 sample.
+Please read [this introduction](./doc/introduction.md) to understand the fundamentals of Geeo.
+
+Or consult our [website geeo.io](https://geeo.io/) to learn more about Geeo and how to use it in your apps.
+
+# Javascript SDK
+
+`geeo-javascript` is the open source Javascript Client for Geeo.io, usable from node.js or an HTML5 browser.
+
+You can get it with npm:
+
+```
+$ npm install geeo-javascript
+```
+
+or clone this repository.
+
+## Files
+
+`geeo-javascript` is written with ES6 in the `src` folder, babelified to ES5 in `lib` and webpacked and minified in `dist`.
+
+The node.js module can be used with
+
+```
+const {GeeoWS, GeeoHTTP} = require("geeo-javascript")
+```
+
+If you're writing for browsers, include `./dist/geeo.js` or `./dist/geeo.min.js` to your webpage. See [example.html](./example.html) for a working example.
+
+## API
+
+You can find the API docs in [the doc folder](./doc/api.md).
+
+## the API at a glance
 
 _Note: functions I'm not allowed to use with my token are just ignored by the server._
 
-# API
-
-You can find the API doc in [the doc folder](./doc/api.md).
-
-Otherwise, here's a kind of cheat sheet...
 ```
 var wsURL = "wss://demo.geeo.io"
 var httpURL = "https://demo.geeo.io"
