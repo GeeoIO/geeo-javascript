@@ -72,7 +72,7 @@ The use of WebSockets makes it possible to connect users to the DB directly, and
 
 We don't persist agents positions to disk. When the connection is gone, the data is gone. If the server restarts (for update/maintenance or failure), the connections are closed anyway, and all transient data is gone. The persistent data is persistent and backed up, but it contains much less sensitive data and no user location.
 
-We've designed AirBeacons so they can be useful without beeing too intrusive. A Webhook will be called when an agent enters/leaves the air beacon, but without coordinates information to preserve privacy and avoid geo-tracking.
+We've designed AirBeacons so they can be useful without being too intrusive. A Webhook will be called when an agent enters/leaves the air beacon, but without coordinates information to preserve privacy and avoid geo-tracking.
 
 We're using HTTPS and WSS with free Let's Encrypt certificates for all communication.
 
@@ -80,7 +80,7 @@ Finally, our instances don't log at all. You can setup WebHooks if your app requ
 
 #### Authentication workflow
 
-Authentication to a Geeo Server should always rely an external authentication system. We're using JsonWebTokens to transfer trust from your system to Geeo (they must share a secret): if you have authenticated a user, sign a JsonWebToken and hand it over to the client so it can connect to Geeo. This token is also used to restrain capabilities (agent or view or both, ability to create POIs or AirBeacons) to precisely manage the level of power you're giving users.
+Authentication to a Geeo Server should always rely on external authentication system. We're using JsonWebTokens to transfer trust from your system to Geeo (they must share a secret): if you have authenticated a user, sign a JsonWebToken and hand it over to the client so it can connect to Geeo. This token is also used to restrain capabilities (agent or view or both, ability to create POIs or AirBeacons) to precisely manage the level of power you're giving users.
 
 We're including a development-only HTTP route to obtain a token from a Geeo server, but it does not authenticate users and should be disabled in production.
 
