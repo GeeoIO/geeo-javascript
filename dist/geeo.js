@@ -310,7 +310,7 @@ var View = exports.View = function (_EventEmitter2) {
 		key: "move",
 		value: function move(lon1, lat1, lon2, lat2) {
 			this.position = [lon1, lat1, lon2, lat2];
-			this.parent.ws.send(JSON.stringify({ zoomWindowPosition: this.position }));
+			this.parent.ws.send(JSON.stringify({ viewPosition: this.position }));
 		}
 
 		/**
@@ -576,7 +576,7 @@ var GeeoHTTP = exports.GeeoHTTP = function () {
 	_createClass(GeeoHTTP, [{
 		key: "getGuestToken",
 		value: function getGuestToken(agentId, viewPortId) {
-			return fetch(this.httpURL + "/api/dev/token?zwId=" + viewPortId + "&agId=" + agentId).then(function (response) {
+			return fetch(this.httpURL + "/api/dev/token?viewId=" + viewPortId + "&agId=" + agentId).then(function (response) {
 				if (response.ok) {
 					return response.text();
 				} else {

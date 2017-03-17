@@ -166,7 +166,7 @@ export class View extends EventEmitter {
 	 */
 	move(lon1, lat1, lon2, lat2) {
 		this.position = [lon1, lat1, lon2, lat2]
-		this.parent.ws.send(JSON.stringify({ zoomWindowPosition: this.position }))
+		this.parent.ws.send(JSON.stringify({ viewPosition: this.position }))
 	}
 
 	/**
@@ -353,7 +353,7 @@ export class GeeoHTTP {
 	 * @param {string} viewPortId - The ID to use for the viewport
 	 */
 	getGuestToken(agentId, viewPortId) {
-		return fetch(`${this.httpURL}/api/dev/token?zwId=${viewPortId}&agId=${agentId}`)
+		return fetch(`${this.httpURL}/api/dev/token?viewId=${viewPortId}&agId=${agentId}`)
 			.then(function (response) {
 				if (response.ok) {
 					return response.text()
