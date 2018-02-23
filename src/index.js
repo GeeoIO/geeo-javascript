@@ -363,4 +363,93 @@ export class GeeoHTTP {
 			})
 	}
 
+	/**
+	 * Create a new Point of Interest
+	 * @param {String} token - A JWT token with HTTP capability
+	 * @param {String} poi_id - The ID for the POI
+	 * @param {number[]} pos  - The coords of the POI
+	 * @param {Object} publicData - The public data
+	 * @param {String} creator - The creator id
+	 */
+	createPOI(token, poi_id, pos, publicData, creator) {
+		return fetch(`${this.httpURL}/api/v1/poi`, {
+			headers: {"X-GEEO-TOKEN": token},
+			method: 'POST',
+			body: {
+				poi_id, pos, publicData, creator
+			}
+		}).then(function (response) {
+			if (response.ok) {
+				return response.json()
+			} else {
+				throw new Error("Can't create POI")
+			}
+		})
+	}
+
+	/**
+	 * Delete a POI
+	 * @param {String} token - a JWT token with HTTP capability 
+	 * @param {String} poi_id - The ID of the poi to remove
+	 */
+	deletePOI(token, poi_id) {
+		return fetch(`${this.httpURL}/api/v1/poi`, {
+			headers: {"X-GEEO-TOKEN": token},
+			method: 'DELETE',
+			body: {
+				poi_id
+			}
+		}).then(function (response) {
+			if (response.ok) {
+				return response.json()
+			} else {
+				throw new Error("Can't remove POI")
+			}
+		})
+	}
+
+	/**
+	 * Create a new Air Beacon
+	 * @param {String} token - A JWT token with HTTP capability
+	 * @param {String} ab_id - The ID for the AirBeacon
+	 * @param {number[]} pos  - The coords of the AirBeacon
+	 * @param {Object} publicData - The public data
+	 * @param {String} creator - The creator id
+	 */
+	createAirBeacon(token, ab_id, pos, publicData, creator) {
+		return fetch(`${this.httpURL}/api/v1/airbeacon`, {
+			headers: {"X-GEEO-TOKEN": token},
+			method: 'POST',
+			body: {
+				ab_id, pos, publicData, creator
+			}
+		}).then(function (response) {
+			if (response.ok) {
+				return response.json()
+			} else {
+				throw new Error("Can't create AirBeacon")
+			}
+		})
+	}
+	
+	/**
+	 * Delete an AirBeacon
+	 * @param {String} token - a JWT token with HTTP capability 
+	 * @param {String} ab_id - The ID of the AirBeacon to remove
+	 */
+	deleteAirBeacon(token, ab_id) {
+		return fetch(`${this.httpURL}/api/v1/airbeacon`, {
+			headers: {"X-GEEO-TOKEN": token},
+			method: 'DELETE',
+			body: {
+				ab_id
+			}
+		}).then(function (response) {
+			if (response.ok) {
+				return response.json()
+			} else {
+				throw new Error("Can't remove AirBeacon")
+			}
+		})
+	}
 }

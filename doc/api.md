@@ -503,6 +503,10 @@ GeeoHTTP let's you connect to the Geeo HTTP RESTful API
 * [GeeoHTTP](#GeeoHTTP)
     * [new GeeoHTTP(httpURL)](#new_GeeoHTTP_new)
     * [.getGuestToken(agentId, viewPortId)](#GeeoHTTP+getGuestToken)
+    * [.createPOI(token, poi_id, pos, publicData, creator)](#GeeoHTTP+createPOI)
+    * [.deletePOI(token, poi_id)](#GeeoHTTP+deletePOI)
+    * [.createAirBeacon(token, ab_id, pos, publicData, creator)](#GeeoHTTP+createAirBeacon)
+    * [.deleteAirBeacon(token, ab_id)](#GeeoHTTP+deleteAirBeacon)
 
 <a name="new_GeeoHTTP_new"></a>
 
@@ -525,6 +529,60 @@ Get a guest token from server. Only possible with development routes allowed
 | --- | --- | --- |
 | agentId | <code>string</code> | The ID to use for the agent |
 | viewPortId | <code>string</code> | The ID to use for the viewport |
+
+<a name="GeeoHTTP+createPOI"></a>
+
+### geeoHTTP.createPOI(token, poi_id, pos, publicData, creator)
+Create a new Point of Interest
+
+**Kind**: instance method of <code>[GeeoHTTP](#GeeoHTTP)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| token | <code>String</code> | A JWT token with HTTP capability |
+| poi_id | <code>String</code> | The ID for the POI |
+| pos | <code>Array.&lt;number&gt;</code> | The coords of the POI |
+| publicData | <code>Object</code> | The public data |
+| creator | <code>String</code> | The creator id |
+
+<a name="GeeoHTTP+deletePOI"></a>
+
+### geeoHTTP.deletePOI(token, poi_id)
+Delete a POI
+
+**Kind**: instance method of <code>[GeeoHTTP](#GeeoHTTP)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| token | <code>String</code> | a JWT token with HTTP capability |
+| poi_id | <code>String</code> | The ID of the poi to remove |
+
+<a name="GeeoHTTP+createAirBeacon"></a>
+
+### geeoHTTP.createAirBeacon(token, ab_id, pos, publicData, creator)
+Create a new Air Beacon
+
+**Kind**: instance method of <code>[GeeoHTTP](#GeeoHTTP)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| token | <code>String</code> | A JWT token with HTTP capability |
+| ab_id | <code>String</code> | The ID for the AirBeacon |
+| pos | <code>Array.&lt;number&gt;</code> | The coords of the AirBeacon |
+| publicData | <code>Object</code> | The public data |
+| creator | <code>String</code> | The creator id |
+
+<a name="GeeoHTTP+deleteAirBeacon"></a>
+
+### geeoHTTP.deleteAirBeacon(token, ab_id)
+Delete an AirBeacon
+
+**Kind**: instance method of <code>[GeeoHTTP](#GeeoHTTP)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| token | <code>String</code> | a JWT token with HTTP capability |
+| ab_id | <code>String</code> | The ID of the AirBeacon to remove |
 
 <a name="GeeoHTTP"></a>
 
@@ -534,6 +592,10 @@ Get a guest token from server. Only possible with development routes allowed
 * [GeeoHTTP](#GeeoHTTP)
     * [new GeeoHTTP(httpURL)](#new_GeeoHTTP_new)
     * [.getGuestToken(agentId, viewPortId)](#GeeoHTTP+getGuestToken)
+    * [.createPOI(token, poi_id, pos, publicData, creator)](#GeeoHTTP+createPOI)
+    * [.deletePOI(token, poi_id)](#GeeoHTTP+deletePOI)
+    * [.createAirBeacon(token, ab_id, pos, publicData, creator)](#GeeoHTTP+createAirBeacon)
+    * [.deleteAirBeacon(token, ab_id)](#GeeoHTTP+deleteAirBeacon)
 
 <a name="new_GeeoHTTP_new"></a>
 
@@ -556,4 +618,58 @@ Get a guest token from server. Only possible with development routes allowed
 | --- | --- | --- |
 | agentId | <code>string</code> | The ID to use for the agent |
 | viewPortId | <code>string</code> | The ID to use for the viewport |
+
+<a name="GeeoHTTP+createPOI"></a>
+
+### geeoHTTP.createPOI(token, poi_id, pos, publicData, creator)
+Create a new Point of Interest
+
+**Kind**: instance method of <code>[GeeoHTTP](#GeeoHTTP)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| token | <code>String</code> | A JWT token with HTTP capability |
+| poi_id | <code>String</code> | The ID for the POI |
+| pos | <code>Array.&lt;number&gt;</code> | The coords of the POI |
+| publicData | <code>Object</code> | The public data |
+| creator | <code>String</code> | The creator id |
+
+<a name="GeeoHTTP+deletePOI"></a>
+
+### geeoHTTP.deletePOI(token, poi_id)
+Delete a POI
+
+**Kind**: instance method of <code>[GeeoHTTP](#GeeoHTTP)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| token | <code>String</code> | a JWT token with HTTP capability |
+| poi_id | <code>String</code> | The ID of the poi to remove |
+
+<a name="GeeoHTTP+createAirBeacon"></a>
+
+### geeoHTTP.createAirBeacon(token, ab_id, pos, publicData, creator)
+Create a new Air Beacon
+
+**Kind**: instance method of <code>[GeeoHTTP](#GeeoHTTP)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| token | <code>String</code> | A JWT token with HTTP capability |
+| ab_id | <code>String</code> | The ID for the AirBeacon |
+| pos | <code>Array.&lt;number&gt;</code> | The coords of the AirBeacon |
+| publicData | <code>Object</code> | The public data |
+| creator | <code>String</code> | The creator id |
+
+<a name="GeeoHTTP+deleteAirBeacon"></a>
+
+### geeoHTTP.deleteAirBeacon(token, ab_id)
+Delete an AirBeacon
+
+**Kind**: instance method of <code>[GeeoHTTP](#GeeoHTTP)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| token | <code>String</code> | a JWT token with HTTP capability |
+| ab_id | <code>String</code> | The ID of the AirBeacon to remove |
 

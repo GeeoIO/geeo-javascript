@@ -1,6 +1,7 @@
 # What is Geeo.io
 
 There are two main characteristics to Geeo:
+
 - it's a geo database
 - and it's a websocket server
 
@@ -84,8 +85,9 @@ Authentication to a Geeo Server should always rely on an external authentication
 
 We're including a development-only HTTP route to obtain a token from a Geeo server, but it does not authenticate users and should be disabled in production.
 
-The normal workflow looks like:
-- the user connects to your backend, and authenticates
+The normal workflow looks like this:
+
+- every user connects to your backend, and authenticates
 - your backend should checks auth, and build a JWT token with the capabilities required by the client and his ID
 - the client receives the token and can use it to connect to Geeo
 
