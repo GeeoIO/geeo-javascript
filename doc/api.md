@@ -326,8 +326,8 @@ You can use it only if your token allows it.
     * [new View(parent)](#new_View_new)
     * [.move(lon1, lat1, lon2, lat2)](#View+move)
     * [.getPosition()](#View+getPosition) ⇒ <code>Array.&lt;number&gt;</code>
-    * [.pois()](#View+pois) ⇒ <code>Array.POI</code>
-    * [.agents()](#View+agents) ⇒ <code>Array.Agent</code>
+    * [.getPois()](#View+getPois) ⇒ <code>Array.POI</code>
+    * [.getAgents()](#View+getAgents) ⇒ <code>Array.Agent</code>
     * ["agentEntered"](#View+event_agentEntered)
     * ["agentLeft"](#View+event_agentLeft)
     * ["agentMoved"](#View+event_agentMoved)
@@ -363,16 +363,16 @@ Get the current Viewport
 
 **Kind**: instance method of <code>[View](#View)</code>  
 **Returns**: <code>Array.&lt;number&gt;</code> - an array with [lon1, lat1, lon2, lat2]  
-<a name="View+pois"></a>
+<a name="View+getPois"></a>
 
-### view.pois() ⇒ <code>Array.POI</code>
+### view.getPois() ⇒ <code>Array.POI</code>
 Returns all points of interest in the view
 
 **Kind**: instance method of <code>[View](#View)</code>  
 **Returns**: <code>Array.POI</code> - the array of pois  
-<a name="View+agents"></a>
+<a name="View+getAgents"></a>
 
-### view.agents() ⇒ <code>Array.Agent</code>
+### view.getAgents() ⇒ <code>Array.Agent</code>
 Returns all agents in the view
 
 **Kind**: instance method of <code>[View](#View)</code>  

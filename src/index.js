@@ -181,7 +181,7 @@ export class View extends EventEmitter {
 	 * Returns all points of interest in the view
 	 * @returns {Array.POI} the array of pois
 	 */
-	pois() {
+	getPois() {
 		let result = []
 		for (let [k, v] of this.pois) {
 			result.push(v)
@@ -193,7 +193,7 @@ export class View extends EventEmitter {
 	 * Returns all agents in the view
 	 * @returns {Array.Agent} the array of agents
 	 */
-	agents() {
+	getAgents() {
 		let result = []
 		for (let [k, v] of this.agents) {
 			result.push(v)
