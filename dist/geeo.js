@@ -597,12 +597,12 @@ var GeeoHTTP = exports.GeeoHTTP = function () {
 	}, {
 		key: "createPOI",
 		value: function createPOI(token, poi_id, pos, publicData, creator) {
-			return fetch(this.httpURL + "/api/v1/poi", {
+			return fetch(this.httpURL + "/api/v1/POI", {
 				headers: { "X-GEEO-TOKEN": token },
 				method: 'POST',
-				body: {
+				body: JSON.stringify({
 					poi_id: poi_id, pos: pos, publicData: publicData, creator: creator
-				}
+				})
 			}).then(function (response) {
 				if (response.ok) {
 					return response.json();
@@ -621,12 +621,12 @@ var GeeoHTTP = exports.GeeoHTTP = function () {
 	}, {
 		key: "deletePOI",
 		value: function deletePOI(token, poi_id) {
-			return fetch(this.httpURL + "/api/v1/poi", {
+			return fetch(this.httpURL + "/api/v1/POI", {
 				headers: { "X-GEEO-TOKEN": token },
 				method: 'DELETE',
-				body: {
+				body: JSON.stringify({
 					poi_id: poi_id
-				}
+				})
 			}).then(function (response) {
 				if (response.ok) {
 					return response.json();
@@ -651,9 +651,9 @@ var GeeoHTTP = exports.GeeoHTTP = function () {
 			return fetch(this.httpURL + "/api/v1/airbeacon", {
 				headers: { "X-GEEO-TOKEN": token },
 				method: 'POST',
-				body: {
+				body: JSON.stringify({
 					ab_id: ab_id, pos: pos, publicData: publicData, creator: creator
-				}
+				})
 			}).then(function (response) {
 				if (response.ok) {
 					return response.json();
@@ -675,9 +675,9 @@ var GeeoHTTP = exports.GeeoHTTP = function () {
 			return fetch(this.httpURL + "/api/v1/airbeacon", {
 				headers: { "X-GEEO-TOKEN": token },
 				method: 'DELETE',
-				body: {
+				body: JSON.stringify({
 					ab_id: ab_id
-				}
+				})
 			}).then(function (response) {
 				if (response.ok) {
 					return response.json();

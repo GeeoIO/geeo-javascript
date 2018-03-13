@@ -372,12 +372,12 @@ export class GeeoHTTP {
 	 * @param {String} creator - The creator id
 	 */
 	createPOI(token, poi_id, pos, publicData, creator) {
-		return fetch(`${this.httpURL}/api/v1/poi`, {
+		return fetch(`${this.httpURL}/api/v1/POI`, {
 			headers: {"X-GEEO-TOKEN": token},
 			method: 'POST',
-			body: {
+			body: JSON.stringify({
 				poi_id, pos, publicData, creator
-			}
+			})
 		}).then(function (response) {
 			if (response.ok) {
 				return response.json()
@@ -393,12 +393,12 @@ export class GeeoHTTP {
 	 * @param {String} poi_id - The ID of the poi to remove
 	 */
 	deletePOI(token, poi_id) {
-		return fetch(`${this.httpURL}/api/v1/poi`, {
+		return fetch(`${this.httpURL}/api/v1/POI`, {
 			headers: {"X-GEEO-TOKEN": token},
 			method: 'DELETE',
-			body: {
+			body: JSON.stringify({
 				poi_id
-			}
+			})
 		}).then(function (response) {
 			if (response.ok) {
 				return response.json()
@@ -420,9 +420,9 @@ export class GeeoHTTP {
 		return fetch(`${this.httpURL}/api/v1/airbeacon`, {
 			headers: {"X-GEEO-TOKEN": token},
 			method: 'POST',
-			body: {
+			body: JSON.stringify({
 				ab_id, pos, publicData, creator
-			}
+			})
 		}).then(function (response) {
 			if (response.ok) {
 				return response.json()
@@ -441,9 +441,9 @@ export class GeeoHTTP {
 		return fetch(`${this.httpURL}/api/v1/airbeacon`, {
 			headers: {"X-GEEO-TOKEN": token},
 			method: 'DELETE',
-			body: {
+			body: JSON.stringify({
 				ab_id
-			}
+			})
 		}).then(function (response) {
 			if (response.ok) {
 				return response.json()
